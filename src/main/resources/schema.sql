@@ -1,0 +1,6 @@
+DROP TABLE IF EXISTS Tipo_Usuario;
+CREATE TABLE Tipo_Usuario (
+id INT AUTO_INCREMENT  PRIMARY KEY,
+descripcion VARCHAR(50) NOT NULL,
+activo INT NOT NULL
+);
