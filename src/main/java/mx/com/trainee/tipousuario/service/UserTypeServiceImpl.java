@@ -1,6 +1,8 @@
 package mx.com.trainee.tipousuario.service;
 
 import lombok.extern.slf4j.Slf4j;
+import mx.com.trainee.tipousuario.exception.ItemNotFoundException;
+import mx.com.trainee.tipousuario.exception.UsrTypInteralServerErrorException;
 import mx.com.trainee.tipousuario.model.entity.UserType;
 import mx.com.trainee.tipousuario.model.repository.UserTypeRepository;
 import mx.com.trainee.tipousuario.model.response.UserTypeDTO;
@@ -60,9 +62,13 @@ public class UserTypeServiceImpl implements IUserTypeService{
 
         UserType userType =circuitBreaker.run(
                 () -> getResultQuerybyId(id),throwable -> {
-                    log.error("Error in [{}] getById: ",this.getClass().getName());
-                        throw new RuntimeException("Error when execute findById");});
+                    log.error("Error in getById: ",throwable.getCause());
+                        throw new UsrTypInteralServerErrorException(throwable.getMessage());
+                });
 
+        if (userType == null) {
+            throw new ItemNotFoundException("The row in table TipoUsuario with id "+id+" is not found.");
+        }
         return ResponseEntity.ok(modelMapper.map(userType,UserTypeDTO.class));
     }
 
